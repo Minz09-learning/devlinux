@@ -44,6 +44,7 @@ jobs:
       - name: Add labels to PR
         run: |
           gh pr edit ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
             --add-label "${{ steps.branch_info.outputs.subject }}" \
             --add-label "${{ steps.branch_info.outputs.course }}"
         env:
