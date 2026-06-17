@@ -95,16 +95,47 @@ Hàng tuần, hệ thống tự động **kiểm tra xem mỗi học viên đã 
 File được tạo tự động mỗi **chủ nhật 23:59 UTC** (hoặc có thể trigger thủ công):
 
 ```
-Student,Session-01,Session-02,Session-03,...
-nguyen-quoc-viet,✅ On time,⏰ Late,❌ Not yet,...
-tran-anh-tu,✅ On time,✅ On time,⏰ Late,...
+Student,Session-01,Session-02,Session-03,...,Session-20,Submission %
+nguyen-quoc-viet,✅ On time,⏰ Late,❌ Not yet,...,⚪ N/A,65.0%
+tran-anh-tu,✅ On time,✅ On time,⏰ Late,...,⚪ N/A,72.5%
 ```
 
-**Giải thích Status:**
-- `✅ On time` — nộp bài trước deadline
-- `⏰ Late` — nộp bài sau deadline (muộn)
-- `❌ Not yet` — chưa nộp bài
+**Giải thích Status cho từng buổi:**
+- `✅ On time` — **nộp bài trước deadline + bài tập đạt yêu cầu**
+- `⏰ Late` — **nộp bài sau deadline + bài tập đạt yêu cầu**
+- `❌ Not yet` — chưa nộp bài HOẶC nộp bài nhưng chưa đạt yêu cầu
+- `⚪ N/A` — không có bài tập giao cho buổi này
 - Nếu GitHub username = "none" trong class.json → luôn `❌ Not yet`
+
+### ⚠️ Điều kiện để bài tập được tính vào báo cáo
+
+**Bài tập chỉ được tính khi:**
+1. ✅ **Được nộp trước deadline** HOẶC **sau deadline** (miễn nộp trước khi báo cáo chạy)
+2. **VÀ** bài tập được review bot chấp nhận (có label `✅ passed`)
+
+**Nếu bài tập chưa đạt yêu cầu:**
+- Dù nộp trước deadline, vẫn hiện `❌ Not yet` trên báo cáo
+- **Phải sửa lại theo nhận xét của review bot để đạt label `✅ passed`**
+- **Deadline của bài tập là deadline để NỘP + CÓ SẴN LABEL `✅ passed`**
+- Nộp muộn nhưng chưa có `✅ passed` → vẫn tính là `❌ Not yet`
+
+### Cách tính Submission %
+
+```
+Submission % = (Tổng điểm từ bài tập đạt / Tổng bài tập đã qua deadline) × 100%
+```
+
+**Scoring cho từng bài tập:**
+- `✅ On time` + `✅ passed` → **1 điểm**
+- `⏰ Late` + `✅ passed` → **0.5 điểm**
+- `❌ Not yet` (chưa nộp hoặc chưa đạt) → **0 điểm**
+
+**Ví dụ:**
+- 10 buổi giao bài tập (chỉ tính những buổi đã qua deadline)
+- 6 buổi nộp đúng hạn + đạt = 6 điểm
+- 2 buổi nộp muộn + đạt = 1 điểm
+- 2 buổi chưa nộp hoặc chưa đạt = 0 điểm
+- **Kết quả: (6 + 1) / 10 × 100% = 70%**
 
 ### Cách xem báo cáo:
 
@@ -119,7 +150,10 @@ tran-anh-tu,✅ On time,✅ On time,⏰ Late,...
    cat embedded-linux/K26.1/homeworks/homework_report.csv
    ```
 
-> 💡 **Lưu ý:** Báo cáo được tạo dựa trên PR của học viên, không phải merge PR. Nộp bài = tạo PR, không cần merge để được tính là đã nộp.
+> 💡 **Lưu ý:** 
+> - Báo cáo được tạo dựa trên PR của học viên, không phải merge PR. Nộp bài = tạo PR, không cần merge để được tính là đã nộp.
+> - **Chỉ bài tập có label `✅ passed` từ review bot mới được tính vào báo cáo và submission %**
+> - Nộp bài sớm nhưng chưa đạt `✅ passed` → phải sửa trước deadline để được tính vào submission %
 
 ---
 
